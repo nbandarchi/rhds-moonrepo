@@ -2,7 +2,7 @@ import { z } from 'zod'
 import type { ZodType } from 'zod'
 
 const UuidParamSchema = z.object({
-  id: z.string().uuid({ message: 'Invalid UUID format for ID parameter.' }),
+  id: z.string().uuid('Invalid UUID format for ID parameter.'),
 })
 
 const NotFoundResponseSchema = z.object({ message: z.string() })

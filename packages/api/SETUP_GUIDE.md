@@ -696,21 +696,13 @@ export async function createApp() {
   })
 
   await fastify.register(FastifySwaggerUi, {
-    baseDir: '/api',
     routePrefix: '/docs',
+    uiConfig: {
+        docExpansion: 'full',
+        deepLinking: true,
+    },
   })
   ...
-}
-```
-
-Add a script to `package.json`:
-
-```json
-{
-  "scripts": {
-    "docs:generate": "tsx src/testing/setup.ts",
-    "docs:serve": "pnpm docs:generate && pnpm dev"
-  }
 }
 ```
 
