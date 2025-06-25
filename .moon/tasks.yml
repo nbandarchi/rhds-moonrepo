@@ -1,0 +1,298 @@
+# https://moonrepo.dev/docs/config/tasks
+$schema: 'https://moonrepo.dev/schemas/tasks.json'
+
+# Global file groups for TypeScript projects
+fileGroups:
+  sources:
+    - 'src/**/*'
+  tests:
+    - 'src/**/*.test.ts'
+    - 'src/**/*.test.tsx'
+    - 'src/**/*.spec.ts'
+    - 'src/**/*.spec.tsx'
+    - 'tests/**/*'
+    - '__tests__/**/*'
+  configs:
+    - 'package.json'
+    - 'tsconfig*.json'
+    - 'vite.config.*'
+    - 'vitest.config.*'
+    - 'jest.config.*'
+    - 'eslint.config.*'
+    - '.eslintrc*'
+    - 'tailwind.config.*'
+    - 'postcss.config.*'
+    - 'components.json'
+
+# Global task definitions that projects can inherit
+tasks:
+  # Install dependencies
+  install:
+    command: 'pnpm install'
+    inputs:
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '/package.json'
+      - '/pnpm-lock.yaml'
+      - '/pnpm-workspace.yaml'
+    outputs:
+      - 'node_modules'
+
+  # Development server (local, persistent)
+  dev:
+    command: 'pnpm dev'
+    preset: 'server'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(configs)'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+    deps:
+      - '~:install'
+
+  # Production build
+  build:
+    command: 'pnpm build'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(configs)'
+    outputs:
+      - 'dist'
+    deps:
+      - '~:install'
+
+  # TypeScript type checking
+  type-check:
+    command: 'pnpm type-check'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - 'tsconfig*.json'
+    deps:
+      - '~:install'
+
+  # Linting with Biome
+  lint:
+    command: 'biome lint .'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+      - 'biome.json'
+      - '/biome.json'
+
+  # Testing (unit tests only, excludes integration tests)
+  test:
+    command: 'pnpm test'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+      outputStyle: 'stream'
+    deps:
+      - '~:install'
+
+  # Integration testing (requires database)
+  test-integration:
+    command: 'pnpm test:integration'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+      outputStyle: 'stream'
+    deps:
+      - '~:install'
+      - 'db-start'
+
+  # All tests (unit + integration)
+  test-all:
+    command: 'pnpm test:all'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+      outputStyle: 'stream'
+    deps:
+      - '~:install'
+      - 'db-start'
+
+  # Test watch mode (local, persistent)
+  test-watch:
+    command: 'pnpm test:watch'
+    preset: 'server'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+    deps:
+      - '~:install'
+
+  # Test coverage report (includes integration tests)
+  test-coverage:
+    command: 'pnpm test:coverage'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+    outputs:
+      - 'coverage'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+      outputStyle: 'stream'
+    deps:
+      - '~:install'
+      - 'db-start'
+
+  # Test coverage report (unit tests only)
+  test-coverage-unit:
+    command: 'pnpm test:coverage:unit'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+    outputs:
+      - 'coverage'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+      outputStyle: 'stream'
+    deps:
+      - '~:install'
+
+  # Format code with Biome
+  format:
+    command: 'biome format . --write'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+      - 'biome.json'
+      - '/biome.json'
+
+  # Check format without writing
+  format-check:
+    command: 'biome format .'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+      - 'biome.json'
+      - '/biome.json'
+
+  # Combined linting and formatting with Biome
+  check:
+    command: 'biome check . --write'
+    inputs:
+      - '@globs(sources)'
+      - '@globs(tests)'
+      - '@globs(configs)'
+      - 'biome.json'
+      - '/biome.json'
+
+  # Start production server (for apps)
+  start:
+    command: 'pnpm start'
+    preset: 'server'
+    inputs:
+      - 'dist/**/*'
+      - 'build/**/*'
+    deps:
+      - 'build'
+
+  # Preview built package
+  preview:
+    command: 'pnpm preview'
+    preset: 'server'
+    inputs:
+      - 'dist/**/*'
+      - 'build/**/*'
+    deps:
+      - 'build'
+
+  # Database operations (singleton tasks using mutex)
+  db-start:
+    command: 'docker compose up postgres -d'
+    options:
+      runFromWorkspaceRoot: true
+      envFile: '/.env'
+      cache: false
+      mutex: 'database'
+
+  db-stop:
+    command: 'docker compose down'
+    options:
+      runFromWorkspaceRoot: true
+      cache: false
+      mutex: 'database'
+
+  db-init-schema:
+    command: 'node $workspaceRoot/scripts/init-project-schema.js $projectRoot'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+      cache: false
+    deps:
+      - 'db-start'
+
+  db-migrate:
+    command: 'pnpm drizzle-kit migrate'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+    deps:
+      - '~:install'
+      - 'db-start'
+
+  db-generate:
+    command: 'pnpm drizzle-kit generate'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+    deps:
+      - '~:install'
+
+  db-studio:
+    command: 'pnpm drizzle-kit studio'
+    preset: 'server'
+    options:
+      envFile:
+        - '.env'
+        - '/.env'
+    deps:
+      - '~:install'
+      - 'db-start'
+
+# Implicit dependencies for all tasks
+implicitDeps:
+  - '^:build'
+
+# Implicit inputs that trigger task re-runs
+implicitInputs:
+  - 'package.json'
+  - '.env*'
+  - 'biome.json'
+  - '/biome.json'

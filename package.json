@@ -1,0 +1,44 @@
+{
+  "name": "rhds-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.2.1",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "moon run ui:dev",
+    "build": "moon run ui:build",
+    "cosmos": "moon run ui:cosmos",
+    "type-check": "moon run :type-check",
+    "test": "moon run :test",
+    "test:integration": "moon run :test-integration",
+    "test:all": "moon run :test-all",
+    "test:coverage": "moon run :test-coverage",
+    "test:coverage:unit": "moon run :test-coverage-unit",
+    "test:api": "moon run api:test",
+    "build:api": "moon run api:build",
+    "lint": "biome lint .",
+    "format": "biome format . --write",
+    "check": "biome check . --write",
+    "db:start": "moon run :db-start",
+    "db:stop": "moon run :db-stop",
+    "db:init": "node scripts/init-project-schema.js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": "23.7.0"
+  },
+  "dependencies": {
+    "@types/pg": "^8.15.4",
+    "dotenv": "^16.5.0",
+    "pg": "^8.16.0",
+    "vitest": "^3.2.0"
+  }
+}

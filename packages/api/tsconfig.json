@@ -1,0 +1,22 @@
+{
+  "extends": "../../configs/tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*",
+    "src/api-test-helpers/fastify-test-instance.ts",
+    "src/api-test-helpers/services/*",
+    "src/api-test-helpers/schemas/*",
+    "src/api-test-helpers/fixtures/*",
+    "test/testing/*"
+  ],
+  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]
+}

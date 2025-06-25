@@ -1,0 +1,61 @@
+{
+  "name": "@rhds/api",
+  "version": "1.0.0",
+  "description": "Shared utilities for Fastify APIs in the RHDS monorepo",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "type-check": "tsc --noEmit",
+    "lint": "biome lint src",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run test/integration",
+    "test:integration:watch": "vitest test/integration",
+    "test:all": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:unit": "vitest run --coverage --exclude=\"test/**\"",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "drizzle-kit": "^0.31.1",
+    "drizzle-orm": "^0.43.1",
+    "fastify": "^5.0.0",
+    "openai": "^4.100.0",
+    "zod": "^3.25.1"
+  },
+  "dependencies": {
+    "@types/pg": "^8.15.4",
+    "dotenv": "^16.5.0",
+    "drizzle-zod": "^0.8.0",
+    "fastify-plugin": "^5.0.1",
+    "pg": "^8.16.0",
+    "zod-to-json-schema": "^3.24.5",
+    "@fastify/error": "^3.0.0"
+  },
+  "devDependencies": {
+    "@fastify/swagger": "^9.5.1",
+    "@fastify/swagger-ui": "^5.2.3",
+    "@types/node": "^22.15.18",
+    "@vitest/coverage-v8": "^3.2.0",
+    "fastify": "^5.3.3",
+    "typescript": "^5.8.3",
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0",
+    "vitest": "^3.2.0",
+    "zod": "^3.25.56"
+  }
+}

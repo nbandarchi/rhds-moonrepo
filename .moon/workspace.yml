@@ -1,0 +1,19 @@
+# https://moonrepo.dev/docs/config/workspace
+$schema: 'https://moonrepo.dev/schemas/workspace.json'
+
+# Define project locations
+projects:
+  - 'packages/*'
+  - 'apps/*'
+
+# Configure VCS
+vcs:
+  manager: 'git'
+  defaultBranch: 'main'
+
+# Environment inheritance handled at task level in .moon/tasks.yml
+
+# Generator settings for templates
+# generator:
+#   templates:
+#     - 'https://github.com/moonrepo/moon-configs'
