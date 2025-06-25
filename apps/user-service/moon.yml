@@ -7,7 +7,6 @@ type: 'application'
 
 dependsOn:
   - 'api'
-
 # All tasks now inherited from global .moon/tasks.yml
 # Project automatically inherits: dev, build, test, test-watch, type-check, lint, format, etc.
 # Environment files (.env) are automatically loaded from workspace root and project root

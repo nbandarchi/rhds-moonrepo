@@ -138,3 +138,6 @@ cosmos.imports.ts
 # Temporary folders
 **/temp
 **/generated
+
+# VSCode
+.vscode

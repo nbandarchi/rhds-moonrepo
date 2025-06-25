@@ -18,3 +18,12 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Create project_schemas table to track project schema mappings
+CREATE TABLE IF NOT EXISTS public.project_schemas (
+    id SERIAL PRIMARY KEY,
+    project_name VARCHAR(255) UNIQUE NOT NULL,
+    schema_name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

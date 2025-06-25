@@ -264,6 +264,7 @@ tasks:
         - '/.env'
     deps:
       - '~:install'
+      - 'db-init-schema'
       - 'db-start'
 
   db-generate:
@@ -274,6 +275,8 @@ tasks:
         - '/.env'
     deps:
       - '~:install'
+      - 'db-init-schema'
+      - 'db-start'
 
   db-studio:
     command: 'pnpm drizzle-kit studio'

@@ -17,17 +17,10 @@ describe('OpenAI Client Integration Tests', () => {
   const testModel = 'meta-llama/llama-3.1-8b-instruct'
 
   beforeAll(() => {
-    // Ensure we have the required environment variable
-    if (!process.env.OPENROUTER_KEY) {
-      throw new Error('OPENROUTER_KEY environment variable is required for integration tests')
-    }
-
     const config: OpenAiClientConfig = {
       model: testModel,
       temperature: 0.3,
       maxTokens: 500,
-      apiKey: process.env.OPENROUTER_KEY,
-      apiBase: 'https://openrouter.ai/api/v1',
     }
 
     client = createOpenAiClient(config)
@@ -105,7 +98,7 @@ describe('OpenAI Client Integration Tests', () => {
 
       testClient.addSystemMessage('You are a helpful assistant.')
       const messages = testClient.getMessages()
-      
+
       expect(messages).toHaveLength(1)
       expect(messages[0]).toEqual({
         role: 'system',
@@ -121,7 +114,7 @@ describe('OpenAI Client Integration Tests', () => {
 
       testClient.addUserMessage('Hello, how are you?')
       const messages = testClient.getMessages()
-      
+
       expect(messages).toHaveLength(1)
       expect(messages[0]).toEqual({
         role: 'user',
@@ -137,7 +130,7 @@ describe('OpenAI Client Integration Tests', () => {
 
       testClient.addAssistantMessage('I am doing well, thank you!')
       const messages = testClient.getMessages()
-      
+
       expect(messages).toHaveLength(1)
       expect(messages[0]).toEqual({
         role: 'assistant',
@@ -153,7 +146,7 @@ describe('OpenAI Client Integration Tests', () => {
 
       testClient.addToolResponse('call_123', '{"status": "completed"}')
       const messages = testClient.getMessages()
-      
+
       expect(messages).toHaveLength(1)
       expect(messages[0]).toEqual({
         role: 'tool',
@@ -195,7 +188,7 @@ describe('OpenAI Client Integration Tests', () => {
 
       testClient.addMessages(messagesToAdd)
       const messages = testClient.getMessages()
-      
+
       expect(messages).toHaveLength(3)
       expect(messages[0].content).toBe('You are helpful.')
       expect(messages[1].content).toBe('Hello!')
@@ -216,7 +209,7 @@ describe('OpenAI Client Integration Tests', () => {
 
       testClient.addMessages([functionMessage])
       const messages = testClient.getMessages()
-      
+
       expect(messages).toHaveLength(1)
       expect(messages[0]).toEqual({
         role: 'function',
@@ -239,7 +232,7 @@ describe('OpenAI Client Integration Tests', () => {
 
       testClient.addMessages([toolMessage])
       const messages = testClient.getMessages()
-      
+
       expect(messages).toHaveLength(1)
       expect(messages[0]).toEqual({
         role: 'tool',
@@ -292,7 +285,7 @@ describe('OpenAI Client Integration Tests', () => {
         .addUserMessage('User message')
 
       expect(testClient.getMessages()).toHaveLength(2)
-      
+
       testClient.resetMessages()
       expect(testClient.getMessages()).toHaveLength(0)
     })
@@ -408,7 +401,9 @@ describe('OpenAI Client Integration Tests', () => {
     it('should successfully send a simple chat completion request', async () => {
       client
         .resetMessages()
-        .addSystemMessage('You are a helpful assistant that responds concisely.')
+        .addSystemMessage(
+          'You are a helpful assistant that responds concisely.'
+        )
         .addUserMessage('What is 2+2? Respond with just the number.')
 
       const response = await client.send()
@@ -454,7 +449,9 @@ describe('OpenAI Client Integration Tests', () => {
 
       lowTempClient
         .addSystemMessage('You are a helpful assistant.')
-        .addUserMessage('Tell me about artificial intelligence in exactly 3 words.')
+        .addUserMessage(
+          'Tell me about artificial intelligence in exactly 3 words.'
+        )
 
       const response = await lowTempClient.send()
 
@@ -526,17 +523,19 @@ describe('OpenAI Client Integration Tests', () => {
       const response = await toolClient.send()
 
       expect(response.choices[0]).toBeDefined()
-      
+
       // The model might or might not use the tool, but the response should be valid
       if (response.choices[0].finish_reason === 'tool_calls') {
         expect(response.choices[0].message.tool_calls).toBeDefined()
-        expect(response.choices[0].message.tool_calls?.length).toBeGreaterThan(0)
-        
+        expect(response.choices[0].message.tool_calls?.length).toBeGreaterThan(
+          0
+        )
+
         const toolCall = response.choices[0].message.tool_calls?.[0]
         if (!toolCall) throw new Error('Expected tool call')
         expect(toolCall.function.name).toBe('get_weather')
         expect(toolCall.function.arguments).toBeDefined()
-        
+
         // Parse arguments to ensure they're valid JSON
         const args = JSON.parse(toolCall.function.arguments)
         expect(args.location).toBeDefined()
@@ -594,7 +593,7 @@ describe('OpenAI Client Integration Tests', () => {
         testClient.addMessages([
           {
             // biome-ignore lint/suspicious/noExplicitAny: Testing invalid input
-        role: 'invalid_role' as any,
+            role: 'invalid_role' as any,
             content: 'This should fail',
           },
         ])
